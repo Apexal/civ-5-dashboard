@@ -48,17 +48,17 @@ app.get("/events", (request, response) => {
   });
 
   // Create new client with response and store it
-  const client = {
+  const newClient = {
     id: crypto.randomUUID(),
     response,
   };
-  clients.push(client.id);
-  console.log(`${client.id} Connection established`);
+  clients.push(newClient.id);
+  console.log(`${newClient.id} Connection established`);
 
   // Remove the client from the list when the connection closes
   request.on("close", () => {
-    console.log(`${client.id} Connection closed`);
-    clients = clients.filter((client) => client.id !== clientId);
+    console.log(`${newClient.id} Connection closed`);
+    clients = clients.filter((client) => client.id !== newClient.id);
   });
 });
 
