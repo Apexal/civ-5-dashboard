@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Civ Dashboard</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/yegor256/tacit@gh-pages/tacit-css-1.7.1.min.css" />
+</head>
+
+<body>
+    <script type="module">
+        const importUMD = async (url, module = { exports: {} }) =>
+            (Function('module', 'exports', await (await fetch(url)).text()).call(module, module, module.exports), module).exports
+
+        const { default: Civ5Save } = await importUMD("/civ.js");
+
+        async function update() {
+            try {
+                const response = await fetch("/latest")
+                const blob = await response.blob();
+                const save = await Civ5Save.fromFile(blob);
+                console.log(save);
+
+                document.getElementById("code").innerText = JSON.stringify(save, null, 2);
+            } catch (error) {
+                console.log("Found error:", error)
+            }
+        }
+
+        const source = new EventSource("/events");
+        source.addEventListener('message', e => {
+            let event;
+            try {
+                event = JSON.parse(e.data);
+            } catch (error) {
+                return;
+            }
+
+            if (event.type == "new-file") {
+                update();
+            }
+        });
+
+        update();
+    </script>
+
+    <main>
+        <table id="table">
+            <thead></thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <pre><code id="code"></code></pre>
+    </main>
+    <footer>
+        Made by Frank Matranga
+    </footer>
+</body>
+
+</html>
