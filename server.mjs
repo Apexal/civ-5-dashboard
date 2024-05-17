@@ -1,16 +1,17 @@
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
+import express from "express";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
-import express from "express";
-
-const port = process.env.PORT || 8080;
-const app = express();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+const port = process.env.PORT || 8080;
+const autosaveDir =
+  process.env.SAVES_FOLDER || path.join(__dirname, "autosaves");
+const app = express();
 
 /** Stores connected clients and their responses to keep them alive */
 let clients = [];
@@ -65,9 +66,7 @@ app.get("/events", (request, response) => {
 /** Respond with latest game save file */
 app.get("/latest", (req, res) => {
   res.status(200).set("content-type", "application/octet-stream");
-  fs.createReadStream(
-    path.join(__dirname, "autosaves", latestAutosavefile)
-  ).pipe(res);
+  fs.createReadStream(path.join(autosaveDir, latestAutosavefile)).pipe(res);
 });
 
 app.listen(port, () => {
