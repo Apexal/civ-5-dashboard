@@ -65,10 +65,9 @@ app.get("/events", (request, response) => {
 
 /** Respond with latest game save file */
 app.get("/latest", (req, res) => {
-  res.status(200).set("content-type", "application/octet-stream");
-  fs.createReadStream(path.join(autosaveDir, latestAutosavefile)).pipe(res);
+  res.sendFile(path.join(autosaveDir, latestAutosavefile));
 });
 
 app.listen(port, () => {
-  console.log(`server running: http://localhost:${port}\n`);
+  console.log(`Civ dashboard: http://localhost:${port}`);
 });
