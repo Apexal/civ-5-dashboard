@@ -6,7 +6,33 @@
     <meta http-equiv='X-UA-Compatible' content='IE=edge'>
     <title>Civ Dashboard</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/yegor256/tacit@gh-pages/tacit-css-1.7.1.min.css" />
+    <style>
+        html {
+            height: 100%;
+        }
+        body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #turn {
+            font-size: 50vh;
+        }
+        
+        #players {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+    </style>
 </head>
 
 <body>
@@ -21,9 +47,11 @@
                 const response = await fetch("/latest")
                 const blob = await response.blob();
                 const save = await Civ5Save.fromFile(blob);
+                window.civ = save;
                 console.log(save);
 
-                document.getElementById("code").innerText = JSON.stringify(save, null, 2);
+                document.getElementById("turn").innerText = save.currentTurn;
+                document.getElementById("players").innerHTML = save.players.sort(({ civilization: civA }, {civilization: civB}) => civA.localeCompare(civB)).map(({ civilization }) => `<span>${civilization}</span>`).join(" ");
             } catch (error) {
                 console.log("Found error:", error)
             }
@@ -47,15 +75,10 @@
     </script>
 
     <main>
-        <section>
-            <article>
-                <pre><code id="code"></code></pre>
-            </article>
-        </section>
+       <div>TURN</div>
+       <div id="turn">---</div>
+       <div id="players">---</div>
     </main>
-    <footer>
-        Made by Frank Matranga
-    </footer>
 </body>
 
 </html>
